@@ -40,7 +40,7 @@ resource "aws_autoscaling_group" "asg_app01-prod" {
   health_check_type         = "ELB"
 
   force_delete = true
-
+  wait_for_capacity_timeout = "5m"
   launch_configuration = "${aws_launch_configuration.lc_app01-prod.name}"
 }
 
