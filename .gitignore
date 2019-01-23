@@ -1,2 +1,5 @@
 .terraform
 provider.tf
+terraform/provider.tf
+credentials.sh
+
