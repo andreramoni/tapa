@@ -2,7 +2,9 @@
     "variables": {
         "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
         "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
-        "region":         "{{env `AWS_REGION_STG`}}"
+        "region":         "{{env `AWS_REGION_STG`}}",
+        "vpc_id":         "{{env `AWS_VPC_ID`}}",
+        "subnet_id":      "{{env `AWS_SUBNET_ID`}}"
     },
     "builders": [
         {
@@ -10,11 +12,13 @@
             "ami_name": "baseami-centos7-{{timestamp}}",
             "instance_type": "t2.micro",
             "region": "{{user `region`}}",
+            "vpc_id": "{{user `vpc_id`}}",
+            "subnet_id": "{{user `subnet_id`}}",
             "secret_key": "{{user `aws_secret_key`}}",
             "source_ami_filter": {
               "filters": {
               "virtualization-type": "hvm",
-              "name": "baseami-centos7-*",
+              "name": "ami_base",
               "root-device-type": "ebs"
               },
               "owners": ["self"],
