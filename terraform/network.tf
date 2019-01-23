@@ -6,6 +6,7 @@ resource "aws_vpc" "app01" {
     Name = "app01"
   }
 }
+output "vpc_id" { value = "${aws_vpc.app01.id}" }
 
 #### Subnets
 resource "aws_subnet" "app01" {
@@ -17,6 +18,7 @@ resource "aws_subnet" "app01" {
     Name = "app01-az1"
   }
 }
+output "subnet_id" { value = "${aws_subnet.app01.id}" }
 
 #### Internet gateways
 ## IG prod
