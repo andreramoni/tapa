@@ -1,0 +1,102 @@
+#### VPCs
+resource "aws_vpc" "${var.app}-${var.env}" {
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_hostnames = true
+  tags {
+    Name = "app01-prod"
+  }
+}
+
+## VPC staging
+resource "aws_vpc" "app01-stg" {
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_hostnames = true
+  tags {
+    Name = "app01-stg"
+  }
+}
+
+#### Subnets
+## Subnet prod az1
+resource "aws_subnet" "app01-prod-az1" {
+  vpc_id                  = "${aws_vpc.app01-prod.id}"
+  cidr_block              = "10.0.1.0/24"
+  map_public_ip_on_launch = true
+  availability_zone = "us-east-1a"
+  tags {
+    Name = "app01-prod-az1"
+  }
+}
+
+## Subnet prod az2
+resource "aws_subnet" "app01-prod-az2" {
+  vpc_id                  = "${aws_vpc.app01-prod.id}"
+  cidr_block              = "10.0.2.0/24"
+  map_public_ip_on_launch = true
+  availability_zone = "us-east-1c"
+  tags {
+    Name = "app01-prod-az2"
+  }
+}
+
+## Subnet stg
+resource "aws_subnet" "app01-stg" {
+  vpc_id                  = "${aws_vpc.app01-stg.id}"
+  cidr_block              = "10.0.0.0/24"
+  map_public_ip_on_launch = true
+  tags {
+    Name = "app01-stg"
+  }
+}
+
+#### Internet gateways
+## IG prod
+resource "aws_internet_gateway" "app01-prod" {
+  vpc_id = "${aws_vpc.app01-prod.id}"
+  tags {
+    Name = "app01-prod"
+  }
+}
+
+## IG Staging
+resource "aws_internet_gateway" "app01-stg" {
+  vpc_id = "${aws_vpc.app01-stg.id}"
+  tags {
+    Name = "app01-stg"
+  }
+}
+
+#### Route tables
+## RT prod
+resource "aws_route_table" "app01-prod" {
+  vpc_id = "${aws_vpc.app01-prod.id}"
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "${aws_internet_gateway.app01-prod.id}"
+  }
+  tags {
+    Name = "app01-prod"
+  }
+}
+
+resource "aws_route_table" "app01-stg" {
+  vpc_id = "${aws_vpc.app01-stg.id}"
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "${aws_internet_gateway.app01-stg.id}"
+  }
+  tags {
+    Name = "app01-stg"
+  }
+}
+
+resource "aws_route_table_association" "app01-prod-az1" {
+  subnet_id      = "${aws_subnet.app01-prod-az1.id}"
+  route_table_id = "${aws_route_table.app01-prod.id}"
+}
+
+resource "aws_route_table_association" "rta_app01-prod_1c" {
+  subnet_id      = "${aws_subnet.app01-prod-az1.id}"
+  route_table_id = "${aws_route_table.app01-prod.id}"
+}
+
