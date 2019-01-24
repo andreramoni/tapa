@@ -1,8 +1,7 @@
 resource "aws_instance" "i_app01-frontend" {
   ami           = "ami-051b4811c67117b1b"
   instance_type = "t2.micro"
-  #security_groups = [ "${aws_security_group.sg_app01.id}" ]
-  #security_groups = ["sg-030cda8777a82527b" ]
+  vpc_security_group_ids = [ "${aws_security_group.sg_app01.id}" ]
   subnet_id      = "${aws_subnet.subnet_app01-prod_1a.id}"
   tags = {
     Name = "i-app01-frontend01"
