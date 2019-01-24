@@ -1,6 +1,6 @@
 resource "aws_security_group" "app01" {
   name = "app01"
-  vpc_id = "${aws_vpc.app01-prod.id}"
+  vpc_id = "${aws_vpc.app01.id}"
   ingress {
     from_port = 0
     to_port = 0
