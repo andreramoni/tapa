@@ -1,11 +1,11 @@
 ## LAUNCH CONFIG
 resource "aws_launch_configuration" "app01" {
   name = "app01"
-  image_id = "ami-051b4811c67117b1b"
+  image_id = "ami-0a4205f3de2b84b1a"
   instance_type = "t2.micro"
-  security_groups = [
-    "${aws_security_group.app01.id}",
-  ]
+  #security_groups = [
+  #  "${aws_security_group.app01.id}",
+  #]
   lifecycle {
     create_before_destroy = true
   }
@@ -14,6 +14,25 @@ resource "aws_launch_configuration" "app01" {
     volume_size = "10"
   }
 }
+
+## TARGET GROUP
+resource "aws_lb_target_group" "app01" {
+  name     = "app01"
+  port     = 22
+  protocol = "TCP"
+  vpc_id = "${aws_vpc.app01.id}"
+
+  health_check = [
+    {
+      interval            = 10
+      protocol            = "TCP"
+      healthy_threshold   = 2
+      unhealthy_threshold = 2
+    },
+  ]
+}
+
+
 
 ## AUTOSCALING GROUP
 resource "aws_autoscaling_group" "app01" {
@@ -24,7 +43,7 @@ resource "aws_autoscaling_group" "app01" {
   #vpc_zone_identifier = ["${data.terraform_remote_state.vpc.private_subnets}"]
 
   target_group_arns = [
-    "${aws_elb_target_group.app01.arn}"
+    "${aws_lb_target_group.app01.arn}"
   ]
 
   load_balancers = [
@@ -46,28 +65,11 @@ resource "aws_autoscaling_group" "app01" {
 
 
 
-## TARGET GROUP
-resource "aws_lb_target_group" "app01" {
-  name     = "app01-prod"
-  port     = 22
-  protocol = "TCP"
-  vpc_id = "${aws_vpc.app01.id}"
-
-  health_check = [
-    {
-      interval            = 10
-      protocol            = "TCP"
-      healthy_threshold   = 2
-      unhealthy_threshold = 2
-    },
-  ]
-}
-
 ## ELB
 resource "aws_elb" "app01" {
   #name     = "app01"
   internal = true
-  subnets  = ["${aws_subnet.subnet_app01-prod_1a.id}","${aws_subnet.subnet_app01-prod_1c.id}"]
+  subnets  = ["${aws_subnet.app01.id}" ]
 
   #security_groups = [
   #  "${aws_security_group.payments_external_elb.id}",
