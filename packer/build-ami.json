@@ -9,7 +9,7 @@
     "builders": [
         {
             "access_key": "{{user `aws_access_key`}}",
-            "ami_name": "baseami-centos7-{{timestamp}}",
+            "ami_name": "app01-{{timestamp}}",
             "instance_type": "t2.micro",
             "region": "{{user `region`}}",
             "vpc_id": "{{user `vpc_id`}}",
@@ -18,13 +18,13 @@
             "source_ami_filter": {
               "filters": {
               "virtualization-type": "hvm",
-              "name": "ami_base",
+              "name": "baseami-amlin7-*",
               "root-device-type": "ebs"
               },
               "owners": ["self"],
               "most_recent": true
             },
-            "ssh_username": "ubuntu",
+            "ssh_username": "ec2-user",
             "type": "amazon-ebs"
         }
     ],
@@ -32,13 +32,13 @@
         {
             "type": "file",
             "source": "./provision.sh",
-            "destination": "/root/"
+            "destination": "/tmp/"
         },
         {
             "type": "shell",
             "inline":[
-                "chmod +x /root/provision.sh",
-                "/root/provision.sh"
+                "chmod +x /tmp/provision.sh",
+                "sudo /tmp/provision.sh"
             ]
         }
     ]
