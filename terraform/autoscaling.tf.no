@@ -1,11 +1,11 @@
 ## LAUNCH CONFIG
-resource "aws_launch_configuration" "lc_app01-prod" {
-  name = "lc_app01-prod"
-  image_id = "ami-051b4811c67117b1b"
+resource "aws_launch_configuration" "app01" {
+  name = "app01"
+  image_id = "ami-0a4205f3de2b84b1a"
   instance_type = "t2.micro"
-  security_groups = [
-    "${aws_security_group.sg_app01.id}",
-  ]
+  #security_groups = [
+  #  "${aws_security_group.app01.id}",
+  #]
   lifecycle {
     create_before_destroy = true
   }
@@ -15,20 +15,39 @@ resource "aws_launch_configuration" "lc_app01-prod" {
   }
 }
 
+## TARGET GROUP
+resource "aws_lb_target_group" "app01" {
+  name     = "app01"
+  port     = 22
+  protocol = "TCP"
+  vpc_id = "${aws_vpc.app01.id}"
+
+  health_check = [
+    {
+      interval            = 10
+      protocol            = "TCP"
+      healthy_threshold   = 2
+      unhealthy_threshold = 2
+    },
+  ]
+}
+
+
+
 ## AUTOSCALING GROUP
-resource "aws_autoscaling_group" "asg_app01-prod" {
-  name = "asg_app01-prod"
+resource "aws_autoscaling_group" "app01" {
+  name = "app01"
 
   #availability_zones  = ["${aws_subnet.subnet_app01-prod_1a.availability_zone}"]
   availability_zones  = ["us-east-1a","us-east-1c"]
   #vpc_zone_identifier = ["${data.terraform_remote_state.vpc.private_subnets}"]
 
-  #target_group_arns = [
-  #  "${aws_elb_target_group.tg_app01-prod.arn}"
-  #]
+  target_group_arns = [
+    "${aws_lb_target_group.app01.arn}"
+  ]
 
   load_balancers = [
-    "${aws_elb.elb_app01-prod.id}",
+    "${aws_elb.app01.id}",
   ]
 
   min_elb_capacity = "1"
@@ -41,33 +60,16 @@ resource "aws_autoscaling_group" "asg_app01-prod" {
 
   force_delete = true
   wait_for_capacity_timeout = "5m"
-  launch_configuration = "${aws_launch_configuration.lc_app01-prod.name}"
+  launch_configuration = "${aws_launch_configuration.app01.name}"
 }
 
 
-
-## TARGET GROUP
-resource "aws_lb_target_group" "app01-prod" {
-  name     = "app01-prod"
-  port     = 22
-  protocol = "TCP"
-  vpc_id = "${aws_vpc.vpc_app01-prod.id}"
-
-  health_check = [
-    {
-      interval            = 10
-      protocol            = "TCP"
-      healthy_threshold   = 2
-      unhealthy_threshold = 2
-    },
-  ]
-}
 
 ## ELB
-resource "aws_elb" "elb_app01-prod" {
-  #name     = "elb_app01-prod"
+resource "aws_elb" "app01" {
+  #name     = "app01"
   internal = true
-  subnets  = ["${aws_subnet.subnet_app01-prod_1a.id}","${aws_subnet.subnet_app01-prod_1c.id}"]
+  subnets  = ["${aws_subnet.app01.id}" ]
 
   #security_groups = [
   #  "${aws_security_group.payments_external_elb.id}",
