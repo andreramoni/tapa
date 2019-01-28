@@ -58,7 +58,7 @@ function f_build_image() {
   f_say "Packer validate:"
   packer validate $PACKERFILE || f_error "Error on packer validate."
   f_say "Packer build:"
-  packer build -var "aws_vpc_id=$AWS_VPC_ID" -var "aws_subnet_id=$AWS_SUBNET_ID" $PACKERFILE 
+  packer build $PACKERFILE 
 }
 
 

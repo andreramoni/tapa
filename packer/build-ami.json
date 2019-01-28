@@ -10,8 +10,8 @@
             "ami_name": "app01-{{timestamp}}",
             "instance_type": "t2.micro",
             "region": "{{user `aws_region`}}",
-            "vpc_id": "{{user `aws_vpc_id`}}",
-            "subnet_id": "{{user `aws_subnet_id`}}",
+            "vpc_id": "{{env `AWS_VPC_ID`}}",
+            "subnet_id": "{{env `AWS_SUBNET_ID`}}",
             "secret_key": "{{user `aws_secret_key`}}",
             "source_ami_filter": {
               "filters": {
