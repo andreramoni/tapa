@@ -9,9 +9,12 @@ export PACKERDIR="packer"
 export PACKERFILE="build-ami.json"
 export TMPFILE="/tmp/pipeline-$RANDOM.tmp"
 
-export AWS_VPC_ID=""
-export AWS_SUBNET_ID=""
+#export AWS_VPC_ID=""
+#export AWS_SUBNET_ID=""
 
+
+#############################################################
+## Basic functions:
 
 # Usage instructions:
 function f_usage() {
@@ -55,7 +58,7 @@ function f_build_image() {
   f_say "Packer validate:"
   packer validate $PACKERFILE || f_error "Error on packer validate."
   f_say "Packer build:"
-  packer build $PACKERFILE 
+  packer build -var "aws_vpc_id=$AWS_VPC_ID" -var "aws_subnet_id=$AWS_SUBNET_ID" $PACKERFILE 
 }
 
 
@@ -72,7 +75,7 @@ function f_build_image() {
 #############################################################
 # clean up:
 function f_cleanup() {
-  echo "Removing temp file $TMPFILE:"
+  f_say "Removing temp file $TMPFILE:"
   rm -vf $TMPFILE
 }
 
