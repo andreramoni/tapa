@@ -94,6 +94,9 @@ function f_preflight() {
   if [ "$ENV" == "" ]; then
     f_error "Environment cannot be blank"
   fi
+  source environments/$ENV || f_error "Cannot parse environments/$ENV variables file."
+
+  # Terraform
   cd $TFDIR
   $TFBIN init
   if [ "`$TFBIN workspace list | grep $ENV`" == "" ]; then

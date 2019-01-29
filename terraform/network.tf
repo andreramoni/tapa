@@ -1,6 +1,6 @@
 #### VPCs
 resource "aws_vpc" "app01" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = "${var.vpc_cidr}"
   enable_dns_hostnames = true
   tags {
     Name = "app01"
@@ -11,11 +11,10 @@ output "vpc_id" { value = "${aws_vpc.app01.id}" }
 #### Subnets
 resource "aws_subnet" "app01" {
   vpc_id                  = "${aws_vpc.app01.id}"
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = "${var.subnet_cidr}"
   map_public_ip_on_launch = true
-  #availability_zone = "us-east-1a"
   tags {
-    Name = "app01-az1"
+    Name = "app01"
   }
 }
 output "subnet_id" { value = "${aws_subnet.app01.id}" }
