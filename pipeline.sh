@@ -82,6 +82,7 @@ function f_build_image() {
 #############################################################
 # pre-flight:
 function f_preflight() {
+  # check terraform, packer and ansible
   f_say "Preflight checking..."
 
   TFBIN=$(which terraform) || f_error "Terraform not found"
@@ -92,11 +93,11 @@ function f_preflight() {
   PACKERVER=$($PACKERBIN -version | head -n1)
   f_say "Packer:    $PACKERBIN    ($PACKERVER)"
   
+  # check env vars
+   
 }
-# check terraform, packer and ansible
 
 
-# check env vars
 
 
 #############################################################
