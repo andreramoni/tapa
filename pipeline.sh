@@ -53,27 +53,28 @@ function f_main(){
 function f_build() {
   f_preflight
   f_vardump
-  cd $TFDIR        || f_error "Cannot chdir to $TFDIR."
-  f_say "Terraform plan:"
-  terraform plan  -no-color  || f_error "Error in terraform plan"
-  f_say "Terraform apply:"
-  terraform apply -no-color -auto-approve |  tee $TMPFILE
-  export AWS_VPC_ID=$(cat $TMPFILE | expand | grep 'vpc_id = ' | awk '{print $3}')
-  export AWS_SUBNET_ID=$(cat $TMPFILE | expand | grep 'subnet_id = ' | awk '{print $3}') 
-  f_say "Terraform created VPC_ID=$AWS_VPC_ID."
-  f_say "Terraform created SUBNET_ID=$AWS_SUBNET_ID."
+  cd $TFDIR || f_error "Cannot chdir to $TFDIR."
+    f_say "Terraform plan:"
+    terraform plan  -no-color  || f_error "Error in terraform plan"
+    f_say "Terraform apply:"
+    terraform apply -no-color -auto-approve |  tee $TMPFILE
+    export AWS_VPC_ID=$(cat $TMPFILE | expand | grep 'vpc_id = ' | awk '{print $3}')
+    export AWS_SUBNET_ID=$(cat $TMPFILE | expand | grep 'subnet_id = ' | awk '{print $3}') 
+    f_say "Terraform created VPC_ID=$AWS_VPC_ID."
+    f_say "Terraform created SUBNET_ID=$AWS_SUBNET_ID."
   cd ../$PACKERDIR || f_error "Cannot chdir to $PACKERDIR."
-  f_say "Packer validate:"
-  packer validate $PACKERFILE || f_error "Error validating packer file." 
-  f_say "Packer build:"
-  packer build -color=false $PACKERFILE | tee $TMPFILE
+    f_say "Packer validate:"
+    packer validate $PACKERFILE || f_error "Error validating packer file." 
+    f_say "Packer build:"
+    packer build -color=false $PACKERFILE | tee $TMPFILE
   cd ..
   NEW_AMI_ID=$(cat $TMPFILE | grep ^"$AWS_REGION" | awk '{print $2}' )
   f_say "Packer created NEW_AMI_ID=$NEW_AMI_ID (saving to $DATA_LATEST_AMI)."
   echo $NEW_AMI_ID > $DATA_LATEST_AMI
   f_say "Terraform destroy:"
   cd $TFDIR
-  terraform destroy -auto-approve -no-color
+    terraform destroy -auto-approve -no-color
+  cd ..
   f_say "Packer created NEW_AMI_ID=$NEW_AMI_ID"
 
 }
@@ -84,8 +85,10 @@ function f_deploy(){
   AWS_AMI_ID=$(cat $DATA_LATEST_AMI)
   f_say "Latest AMI: $AWS_AMI_ID"
   cd $TFDIR        || f_error "Cannot chdir to $TFDIR."
-  export TF_VAR_ami_id=$AWS_AMI_ID
-  export TF_VAR_region=$AWS_REGION
+    export TF_VAR_ami_id=$AWS_AMI_ID
+    export TF_VAR_region=$AWS_REGION
+  
+  cd ..
 }
 #############################################################
 # pre-flight:
