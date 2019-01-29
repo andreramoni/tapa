@@ -2,15 +2,14 @@
 
 # Helper script to manage pipeline stages
 
-
 # Vars:
 export TFDIR="terraform"
 export PACKERDIR="packer"
 export PACKERFILE="build-ami.json"
 export TMPFILE="/tmp/pipeline-$RANDOM.tmp"
 export AWS_REGION="$AWS_DEFAULT_REGION"
-#export AWS_VPC_ID=""
-#export AWS_SUBNET_ID=""
+export DATADIR="data"
+export DATA_LATEST_AMI="$DATADIR/latest_ami.txt"
 
 #############################################################
 ## Basic functions:
@@ -19,12 +18,11 @@ export AWS_REGION="$AWS_DEFAULT_REGION"
 function f_usage() {
   echo
   echo "Usage:"
-  echo "  $0 <stage>"
+  echo "  $0 <action>"
   echo
-  echo "Stage can be:"
-  echo "  build             -> To build the new image"
-  echo "  deploy staging    -> To deploy the image on staging"
-  echo "  deploy production -> To deploy the image on production"
+  echo "Action can be:"
+  echo "  build                -> To build the new image"
+  echo "  deploy <environment> -> To deploy the image on <environment>"
   echo
   exit 1
 }
@@ -44,7 +42,7 @@ function f_say() {
 function f_main(){
   case $1 in
     build)       export ENV="$1" ; f_build ;;
-    deploy)      export ENV="$2" ; f_deploy $2 ;;
+    deploy)      export ENV="$2" ; f_deploy;;
     *)           f_say "stage \"$1\" not found" ; f_usage ; exit 1 ;;
   esac
 }
@@ -68,22 +66,31 @@ function f_build() {
   packer validate $PACKERFILE || f_error "Error validating packer file." 
   f_say "Packer build:"
   packer build -color=false $PACKERFILE | tee $TMPFILE
+  cd ..
   NEW_AMI_ID=$(cat $TMPFILE | grep ^"$AWS_REGION" | awk '{print $2}' )
-  f_say "Packer created NEW_AMI_ID=$NEW_AMI_ID"
+  f_say "Packer created NEW_AMI_ID=$NEW_AMI_ID (saving to $DATA_LATEST_AMI)."
+  echo $NEW_AMI_ID > $DATA_LATEST_AMI
   f_say "Terraform destroy:"
-  cd ../$TFDIR
+  cd $TFDIR
   terraform destroy -auto-approve -no-color
   f_say "Packer created NEW_AMI_ID=$NEW_AMI_ID"
 
 }
 
-
+function f_deploy(){
+  f_preflight
+  AMI_ID=$(cat $DATA_LATEST_AMI)
+  f_say "Latest AMI: $AMI_ID"
+}
 #############################################################
 # pre-flight:
 function f_preflight() {
   f_say "Preflight checking..." 
-  
+  if [ "$ENV" == "" ]; then
+    f_error "Environment cannot be blank"
+  fi
   cd $TFDIR
+  $TFBIN init
   if [ "`$TFBIN workspace list | grep $ENV`" == "" ]; then
     f_say "Terraform: creating workspace $ENV"
     $TFBIN workspace new $ENV
@@ -109,6 +116,8 @@ function f_prereqs() {
   PACKERBIN=$(which packer) || f_error "Packer not found"
   PACKERVER=$($PACKERBIN -version | head -n1)
   f_say "Packer:    $PACKERBIN    ($PACKERVER)"
+
+  test -d "$DATADIR" || mkdir $DATADIR
   
   # check env vars
    
@@ -122,7 +131,9 @@ function f_cleanup() {
   rm -vf $TMPFILE
  
   # Reset to default workspace 
+  cd $TFDIR
   $TFBIN workspace select default
+  cd ..
 }
 
 #############################################################
