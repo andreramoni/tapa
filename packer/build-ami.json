@@ -2,7 +2,7 @@
     "variables": {
         "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
         "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
-        "aws_region":     "{{env `AWS_DEFAULT_REGION`}}",
+        "aws_region":     "{{env `AWS_REGION`}}",
         "aws_subnet_id":  "{{env `AWS_SUBNET_ID`}}",
         "aws_vpc_id":     "{{env `AWS_VPC_ID`}}",
         "instance_type":  "{{env `AWS_INSTANCE_TYPE`}}"

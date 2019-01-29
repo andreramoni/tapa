@@ -52,6 +52,7 @@ function f_main(){
 # Output: AMI ID
 function f_build() {
   f_preflight
+  f_vardump
   cd $TFDIR        || f_error "Cannot chdir to $TFDIR."
   f_say "Terraform plan:"
   terraform plan  -no-color  || f_error "Error in terraform plan"
@@ -79,6 +80,8 @@ function f_build() {
 
 function f_deploy(){
   f_preflight
+  f_vardump
+  cd $TFDIR        || f_error "Cannot chdir to $TFDIR."
   AMI_ID=$(cat $DATA_LATEST_AMI)
   f_say "Latest AMI: $AMI_ID"
   export TF_VAR_ami_id=$AMI_ID
