@@ -1,3 +1,4 @@
+variable "ami_id" {}
 variable "app" {
   type = "string"
   default = "app01"

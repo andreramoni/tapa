@@ -81,6 +81,8 @@ function f_deploy(){
   f_preflight
   AMI_ID=$(cat $DATA_LATEST_AMI)
   f_say "Latest AMI: $AMI_ID"
+  export TF_VAR_ami_id=$AMI_ID
+
 }
 #############################################################
 # pre-flight:
