@@ -1,7 +1,0 @@
-provider "aws" {
-## Leave commented to user environment variables
-#  access_key = ""
-#  secret_key = ""
-#  region     = ""
-}
-
