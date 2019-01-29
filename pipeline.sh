@@ -81,11 +81,11 @@ function f_build() {
 function f_deploy(){
   f_preflight
   f_vardump
+  AWS_AMI_ID=$(cat $DATA_LATEST_AMI)
+  f_say "Latest AMI: $AWS_AMI_ID"
   cd $TFDIR        || f_error "Cannot chdir to $TFDIR."
-  AMI_ID=$(cat $DATA_LATEST_AMI)
-  f_say "Latest AMI: $AMI_ID"
-  export TF_VAR_ami_id=$AMI_ID
-
+  export TF_VAR_ami_id=$AWS_AMI_ID
+  export TF_VAR_region=$AWS_REGION
 }
 #############################################################
 # pre-flight:
@@ -104,20 +104,24 @@ function f_preflight() {
     $TFBIN workspace select $ENV
   fi
   cd ..
-
+  export TF_VAR_region=$AWS_REGION
+  
 }
 
 # var dump
 function f_vardump() {
   f_say "----- vars -----"
+  f_say "ARG1=$1"
+  f_say "ARG2=$2"
+  f_say "PWD=$PWD"
   f_say "TFBIN=$TFBIN"
   f_say "TFDIR=$TFDIR"
   f_say "PACKERBIN=$PACKERBIN"
   f_say "PACKERDIR=$PACKERDIR"
   f_say "ENV=$ENV"
   f_say "AWS_REGION=$AWS_REGION"
-  f_say "INSTANCE_TYPE=$INSTANCE_TYPE"
-  f_say "AMI_ID=$AMI_ID"
+  f_say "AWS_INSTANCE_TYPE=$AWS_INSTANCE_TYPE"
+  f_say "AWS_AMI_ID=$AWS_AMI_ID"
   f_say "AWS_VPC_ID=$AWS_VPC_ID"
   f_say "AWS_SUBNET_ID=$AWS_SUBNET_ID"
   f_say "----- vars -----"
