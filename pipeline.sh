@@ -18,7 +18,15 @@ export AWS_REGION="$AWS_DEFAULT_REGION"
 
 # Usage instructions:
 function f_usage() {
-  echo help
+  echo
+  echo "Usage:"
+  echo "  $0 <stage>"
+  echo
+  echo "Stage can be:"
+  echo "  build-image       -> To build the new image"
+  echo "  deploy-staging    -> To deploy the image on staging"
+  echo "  deploy-production -> To deploy the image on production"
+  echo
   exit 1
 }
 
@@ -39,7 +47,7 @@ function f_main(){
     build-image)       f_build_image ;;
     deploy-staging)    f_deploy staging ;;
     deploy-production) f_deploy production ;;
-    *)                 f_usage ; exit 1 ;;
+    *)                 f_say "stage $1 not found" ; f_usage ; exit 1 ;;
   esac
 }
 #############################################################
