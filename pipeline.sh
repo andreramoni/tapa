@@ -12,6 +12,9 @@ export AWS_REGION="$AWS_DEFAULT_REGION"
 #export AWS_VPC_ID=""
 #export AWS_SUBNET_ID=""
 
+export WS_BUILD="build"
+export WS_STAGING="staging"
+export WS_PRODUCTION="production"
 
 #############################################################
 ## Basic functions:
@@ -102,6 +105,14 @@ function f_preflight() {
   f_say "Packer:    $PACKERBIN    ($PACKERVER)"
   
   # check env vars
+
+  # Terraform workspaces: build, staging, production
+  cd $TFDIR || f_error "Cannot chdir to $TFDIR."
+  if [ "`$TFBIN workspace list | grep $WS_BUILD`" == "" ]; then
+    f_say "Terraform: creating workspace $WS_BUILD"
+    $TFBIN workspace new $WS_BUILD
+  fi
+  cd ..
    
 }
 
@@ -113,6 +124,9 @@ function f_preflight() {
 function f_cleanup() {
   f_say "Removing temp file $TMPFILE:"
   rm -vf $TMPFILE
+ 
+  # Reset to default workspace 
+  $TFBIN workspace select default
 }
 
 #############################################################
