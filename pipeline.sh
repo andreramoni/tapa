@@ -8,7 +8,7 @@ export TFDIR="terraform"
 export PACKERDIR="packer"
 export PACKERFILE="build-ami.json"
 export TMPFILE="/tmp/pipeline-$RANDOM.tmp"
-
+export AWS_REGION="$AWS_DEFAULT_REGION"
 #export AWS_VPC_ID=""
 #export AWS_SUBNET_ID=""
 
@@ -48,18 +48,26 @@ function f_main(){
 # Output: AMI ID
 function f_build_image() {
   cd $TFDIR        || f_error "Cannot chdir to $TFDIR."
-  #terraform plan   || f_error "Error in terraform plan"
-  terraform apply  |  tee $TMPFILE
-  export AWS_SUBNET_ID=$(cat $TMPFILE | grep 'subnet_id = ' | awk '{print $3}') 
-  export AWS_VPC_ID=$(cat $TMPFILE | grep 'vpc_id = ' | awk '{print $3}') 
-  f_say "AWS_SUBNET_ID=$AWS_SUBNET_ID"
-  f_say "AWS_VPC_ID=$AWS_VPC_ID"
-  echo "$AWS_VPC_ID" > /tmp/id
+  f_say "Terraform plan:"
+  terraform plan  -no-color  || f_error "Error in terraform plan"
+  f_say "Terraform apply:"
+  terraform apply -no-color -auto-approve |  tee $TMPFILE
+  export AWS_VPC_ID=$(cat $TMPFILE | expand | grep 'vpc_id = ' | awk '{print $3}')
+  export AWS_SUBNET_ID=$(cat $TMPFILE | expand | grep 'subnet_id = ' | awk '{print $3}') 
+  f_say "Terraform created VPC_ID=$AWS_VPC_ID."
+  f_say "Terraform created SUBNET_ID=$AWS_SUBNET_ID."
   cd ../$PACKERDIR || f_error "Cannot chdir to $PACKERDIR."
   f_say "Packer validate:"
-  packer validate $PACKERFILE || f_error "Error on packer validate."
+  packer validate $PACKERFILE || f_error "Error validating packer file." 
   f_say "Packer build:"
-  packer build -var aws_vpc_id=vpc-0a77a4467fb40abbe $PACKERFILE 
+  packer build -color=false $PACKERFILE | tee $TMPFILE
+  NEW_AMI_ID=$(cat $TMPFILE | grep ^"$AWS_REGION" | awk '{print $2}' )
+  f_say "Packer created NEW_AMI_ID=$NEW_AMI_ID"
+  f_say "Terraform destroy:"
+  cd ../$TFDIR
+  terraform destroy -auto-approve -no-color
+  f_say "Packer created NEW_AMI_ID=$NEW_AMI_ID"
+
 }
 
 
