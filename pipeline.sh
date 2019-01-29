@@ -48,17 +48,18 @@ function f_main(){
 # Output: AMI ID
 function f_build_image() {
   cd $TFDIR        || f_error "Cannot chdir to $TFDIR."
-  terraform plan   || f_error "Error in terraform plan"
+  #terraform plan   || f_error "Error in terraform plan"
   terraform apply  |  tee $TMPFILE
   export AWS_SUBNET_ID=$(cat $TMPFILE | grep 'subnet_id = ' | awk '{print $3}') 
   export AWS_VPC_ID=$(cat $TMPFILE | grep 'vpc_id = ' | awk '{print $3}') 
   f_say "AWS_SUBNET_ID=$AWS_SUBNET_ID"
   f_say "AWS_VPC_ID=$AWS_VPC_ID"
+  echo "$AWS_VPC_ID" > /tmp/id
   cd ../$PACKERDIR || f_error "Cannot chdir to $PACKERDIR."
   f_say "Packer validate:"
   packer validate $PACKERFILE || f_error "Error on packer validate."
   f_say "Packer build:"
-  packer build $PACKERFILE 
+  packer build -var aws_vpc_id=vpc-0a77a4467fb40abbe $PACKERFILE 
 }
 
 
