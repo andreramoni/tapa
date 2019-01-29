@@ -1,0 +1,4 @@
+export AWS_REGION="us-east-1"
+export AWS_INSTANCE_TYPE="t2.micro"
+export AWS_INSTANCE_COUNT_DESIRED="1"
+

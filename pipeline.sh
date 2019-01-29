@@ -46,23 +46,27 @@ function f_main(){
     *)           f_say "stage \"$1\" not found" ; f_usage ; exit 1 ;;
   esac
 }
-#############################################################
-# Build image:
-# terraform plan/apply -> packer -> ansible -> terraform destroy
-# Output: AMI ID
-function f_build() {
-  f_preflight
-  f_vardump
+
+function f_terraform_plan(){
+  f_say "Terraform plan:"
   cd $TFDIR || f_error "Cannot chdir to $TFDIR."
-    f_say "Terraform plan:"
     terraform plan  -no-color  || f_error "Error in terraform plan"
-    f_say "Terraform apply:"
+  cd ..
+}
+
+function f_terraform_apply(){
+  f_say "Terraform apply:"
+  cd $TFDIR || f_error "Cannot chdir to $TFDIR."
     terraform apply -no-color -auto-approve |  tee $TMPFILE
-    export AWS_VPC_ID=$(cat $TMPFILE | expand | grep 'vpc_id = ' | awk '{print $3}')
-    export AWS_SUBNET_ID=$(cat $TMPFILE | expand | grep 'subnet_id = ' | awk '{print $3}') 
-    f_say "Terraform created VPC_ID=$AWS_VPC_ID."
-    f_say "Terraform created SUBNET_ID=$AWS_SUBNET_ID."
-  cd ../$PACKERDIR || f_error "Cannot chdir to $PACKERDIR."
+  cd ..
+  export AWS_VPC_ID=$(cat $TMPFILE | expand | grep 'vpc_id = ' | awk '{print $3}')
+  export AWS_SUBNET_ID=$(cat $TMPFILE | expand | grep 'subnet_id = ' | awk '{print $3}') 
+  f_say "Terraform created VPC_ID=$AWS_VPC_ID."
+  f_say "Terraform created SUBNET_ID=$AWS_SUBNET_ID."
+
+}
+function f_packer() {
+  cd $PACKERDIR || f_error "Cannot chdir to $PACKERDIR."
     f_say "Packer validate:"
     packer validate $PACKERFILE || f_error "Error validating packer file." 
     f_say "Packer build:"
@@ -71,12 +75,27 @@ function f_build() {
   NEW_AMI_ID=$(cat $TMPFILE | grep ^"$AWS_REGION" | awk '{print $2}' )
   f_say "Packer created NEW_AMI_ID=$NEW_AMI_ID (saving to $DATA_LATEST_AMI)."
   echo $NEW_AMI_ID > $DATA_LATEST_AMI
+  f_say "Packer created NEW_AMI_ID=$NEW_AMI_ID"
+}
+
+function f_terraform_destroy() {
   f_say "Terraform destroy:"
   cd $TFDIR
     terraform destroy -auto-approve -no-color
   cd ..
-  f_say "Packer created NEW_AMI_ID=$NEW_AMI_ID"
 
+}
+#############################################################
+# Build image:
+# terraform plan/apply -> packer -> ansible -> terraform destroy
+# Output: AMI ID
+function f_build() {
+  f_preflight
+  f_vardump
+  f_terraform_plan
+  f_terraform_apply
+  f_packer
+  f_terraform_destroy
 }
 
 function f_deploy(){
@@ -87,8 +106,9 @@ function f_deploy(){
   cd $TFDIR        || f_error "Cannot chdir to $TFDIR."
     export TF_VAR_ami_id=$AWS_AMI_ID
     export TF_VAR_region=$AWS_REGION
-  
   cd ..
+  f_terraform_plan
+  f_terraform_apply
 }
 #############################################################
 # pre-flight:
@@ -110,7 +130,11 @@ function f_preflight() {
     $TFBIN workspace select $ENV
   fi
   cd ..
+  
+  # Assign vars loaded from environment vars file
   export TF_VAR_region=$AWS_REGION
+  export TF_VAR_instance_count_desired=$AWS_INSTANCE_COUNT_DESIRED
+  export TF_VAR_instance_type=$AWS_INSTANCE_TYPE
   
 }
 
