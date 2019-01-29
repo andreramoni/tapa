@@ -12,10 +12,6 @@ export AWS_REGION="$AWS_DEFAULT_REGION"
 #export AWS_VPC_ID=""
 #export AWS_SUBNET_ID=""
 
-export WS_BUILD="build"
-export WS_STAGING="staging"
-export WS_PRODUCTION="production"
-
 #############################################################
 ## Basic functions:
 
@@ -26,9 +22,9 @@ function f_usage() {
   echo "  $0 <stage>"
   echo
   echo "Stage can be:"
-  echo "  build-image       -> To build the new image"
-  echo "  deploy-staging    -> To deploy the image on staging"
-  echo "  deploy-production -> To deploy the image on production"
+  echo "  build             -> To build the new image"
+  echo "  deploy staging    -> To deploy the image on staging"
+  echo "  deploy production -> To deploy the image on production"
   echo
   exit 1
 }
@@ -47,17 +43,17 @@ function f_say() {
 # arg eval:
 function f_main(){
   case $1 in
-    build-image)       f_build_image ;;
-    deploy-staging)    f_deploy staging ;;
-    deploy-production) f_deploy production ;;
-    *)                 f_say "stage $1 not found" ; f_usage ; exit 1 ;;
+    build)       export ENV="$1" ; f_build ;;
+    deploy)      export ENV="$2" ; f_deploy $2 ;;
+    *)           f_say "stage \"$1\" not found" ; f_usage ; exit 1 ;;
   esac
 }
 #############################################################
 # Build image:
 # terraform plan/apply -> packer -> ansible -> terraform destroy
 # Output: AMI ID
-function f_build_image() {
+function f_build() {
+  f_preflight
   cd $TFDIR        || f_error "Cannot chdir to $TFDIR."
   f_say "Terraform plan:"
   terraform plan  -no-color  || f_error "Error in terraform plan"
@@ -82,19 +78,29 @@ function f_build_image() {
 }
 
 
-
-
-
-
-
-
-
-
 #############################################################
 # pre-flight:
 function f_preflight() {
+  f_say "Preflight checking..." 
+  
+  cd $TFDIR
+  if [ "`$TFBIN workspace list | grep $ENV`" == "" ]; then
+    f_say "Terraform: creating workspace $ENV"
+    $TFBIN workspace new $ENV
+  else
+    f_say "Terraform: select workspace $ENV"
+    $TFBIN workspace select $ENV
+  fi
+  cd ..
+
+}
+
+
+
+# pre-reqs:
+function f_prereqs() {
   # check terraform, packer and ansible
-  f_say "Preflight checking..."
+  f_say "Prereqs checking..."
 
   TFBIN=$(which terraform) || f_error "Terraform not found"
   TFVER=$($TFBIN -version | head -n1)
@@ -105,23 +111,13 @@ function f_preflight() {
   f_say "Packer:    $PACKERBIN    ($PACKERVER)"
   
   # check env vars
-
-  # Terraform workspaces: build, staging, production
-  cd $TFDIR || f_error "Cannot chdir to $TFDIR."
-  if [ "`$TFBIN workspace list | grep $WS_BUILD`" == "" ]; then
-    f_say "Terraform: creating workspace $WS_BUILD"
-    $TFBIN workspace new $WS_BUILD
-  fi
-  cd ..
    
 }
-
-
-
 
 #############################################################
 # clean up:
 function f_cleanup() {
+  f_say "Cleaning up..."
   f_say "Removing temp file $TMPFILE:"
   rm -vf $TMPFILE
  
@@ -131,7 +127,7 @@ function f_cleanup() {
 
 #############################################################
 # program start:
-f_preflight
+f_prereqs
 f_main $@
 f_cleanup
 
