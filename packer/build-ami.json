@@ -4,13 +4,14 @@
         "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
         "aws_region":     "{{env `AWS_DEFAULT_REGION`}}",
         "aws_subnet_id":  "{{env `AWS_SUBNET_ID`}}",
-        "aws_vpc_id":     "{{env `AWS_VPC_ID`}}"
+        "aws_vpc_id":     "{{env `AWS_VPC_ID`}}",
+        "instance_type":  "{{env `AWS_INSTANCE_TYPE`}}"
     },
     "builders": [
         {
             "access_key": "{{user `aws_access_key`}}",
             "ami_name": "app01-{{timestamp}}",
-            "instance_type": "t2.micro",
+            "instance_type": "{{user `instance_type`}}",
             "region": "{{user `aws_region`}}",
             "vpc_id": "{{user `aws_vpc_id`}}",
             "subnet_id": "{{user `aws_subnet_id`}}",

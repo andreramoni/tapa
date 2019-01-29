@@ -104,7 +104,22 @@ function f_preflight() {
 
 }
 
+# var dump
+function f_vardump() {
+  f_say "----- vars -----"
+  f_say "TFBIN=$TFBIN"
+  f_say "TFDIR=$TFDIR"
+  f_say "PACKERBIN=$PACKERBIN"
+  f_say "PACKERDIR=$PACKERDIR"
+  f_say "ENV=$ENV"
+  f_say "AWS_REGION=$AWS_REGION"
+  f_say "INSTANCE_TYPE=$INSTANCE_TYPE"
+  f_say "AMI_ID=$AMI_ID"
+  f_say "AWS_VPC_ID=$AWS_VPC_ID"
+  f_say "AWS_SUBNET_ID=$AWS_SUBNET_ID"
+  f_say "----- vars -----"
 
+}
 
 # pre-reqs:
 function f_prereqs() {
