@@ -1,32 +1,34 @@
 {
     "variables": {
-        "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
-        "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
-        "aws_region":     "{{env `AWS_REGION`}}",
-        "aws_subnet_id":  "{{env `AWS_SUBNET_ID`}}",
-        "aws_vpc_id":     "{{env `AWS_VPC_ID`}}",
-        "instance_type":  "{{env `AWS_INSTANCE_TYPE`}}"
+        "aws_access_key":       "{{env `AWS_ACCESS_KEY_ID`}}",
+        "aws_secret_key":       "{{env `AWS_SECRET_ACCESS_KEY`}}",
+        "aws_region":           "{{env `AWS_REGION`}}",
+        "aws_subnet_id":        "{{env `AWS_SUBNET_ID`}}",
+        "aws_vpc_id":           "{{env `AWS_VPC_ID`}}",
+        "aws_instance_type":    "{{env `AWS_INSTANCE_TYPE`}}",
+        "aws_source_ami_name":  "{{env `AWS_SOURCE_AMI_NAME`}}",
+        "aws_source_ami_owner": "{{env `AWS_SOURCE_AMI_OWNER`}}"
     },
     "builders": [
         {
-            "access_key": "{{user `aws_access_key`}}",
-            "ami_name": "app01-{{timestamp}}",
-            "instance_type": "{{user `instance_type`}}",
-            "region": "{{user `aws_region`}}",
-            "vpc_id": "{{user `aws_vpc_id`}}",
-            "subnet_id": "{{user `aws_subnet_id`}}",
-            "secret_key": "{{user `aws_secret_key`}}",
+            "access_key":    "{{user `aws_access_key`}}",
+            "ami_name":      "app01-{{timestamp}}",
+            "instance_type": "{{user `aws_instance_type`}}",
+            "region":        "{{user `aws_region`}}",
+            "vpc_id":        "{{user `aws_vpc_id`}}",
+            "subnet_id":     "{{user `aws_subnet_id`}}",
+            "secret_key":    "{{user `aws_secret_key`}}",
             "source_ami_filter": {
               "filters": {
               "virtualization-type": "hvm",
-              "name": "baseami-amlin7-*",
-              "root-device-type": "ebs"
+              "name":                "{{user `aws_source_ami_name`}}",
+              "root-device-type":    "ebs"
               },
-              "owners": ["self"],
+              "owners": ["{{user `aws_source_ami_owner`}}"],
               "most_recent": true
             },
             "ssh_username": "ec2-user",
-            "type": "amazon-ebs"
+            "type":         "amazon-ebs"
         }
     ],
     "provisioners": [
