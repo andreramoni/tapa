@@ -28,7 +28,11 @@
               "most_recent": true
             },
             "ssh_username": "ec2-user",
-            "type":         "amazon-ebs"
+            "type":         "amazon-ebs",
+            "ami_regions": [
+              "us-east-1",
+              "us-west-1"
+            ]
         }
     ],
     "provisioners": [
