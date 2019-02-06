@@ -1,6 +1,22 @@
+data "aws_ami" "MyAMI" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["MyAMI*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["self"] # Canonical
+}
+
 resource "aws_instance" "i01" {
   # Amazon linux in us-east-1: ami-035be7bafff33b6b6
-  ami                    = "ami-035be7bafff33b6b6" 
+  ami                    = "${data.aws_ami.MyAMI.id}" 
   count                  = "1"  
   instance_type          = "t2.micro"
   vpc_security_group_ids = [ "${aws_security_group.sg01.id}" ]
