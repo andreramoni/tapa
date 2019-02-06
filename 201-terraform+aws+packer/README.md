@@ -15,7 +15,8 @@ execute the provision.sh script inside it,
 and create a new image.
 
 
-After that, you can use terraform:
+After that, you can use terraform.
+Enter terraform dir.
 
 terraform init    # first time use only
 terraform plan    # To see what it will do
