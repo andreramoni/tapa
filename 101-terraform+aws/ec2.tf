@@ -9,4 +9,7 @@ resource "aws_instance" "i01" {
     Name = "i01"
   }
 }
+output "private_ip" { value = "${aws_instance.i01.private_ip}" }
+output "public_ip" { value = "${aws_instance.i01.public_ip}" }
+
 
