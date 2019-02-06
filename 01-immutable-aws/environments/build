@@ -1,6 +1,6 @@
 export AWS_REGION="us-east-1"
 export AWS_INSTANCE_TYPE="t2.micro"
 export AWS_INSTANCE_COUNT_DESIRED="1"
-export AWS_SOURCE_AMI_NAME="ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*"
-export AWS_SOURCE_AMI_OWNER="099720109477"
-
+export AWS_SOURCE_AMI_FILTER_NAME="amzn-ami*-ebs"
+export AWS_SOURCE_AMI_FILTER_OWNER="137112412989"
+export AWS_AMI_SSH_USER="ec2-user"

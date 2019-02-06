@@ -6,8 +6,9 @@
         "aws_subnet_id":        "{{env `AWS_SUBNET_ID`}}",
         "aws_vpc_id":           "{{env `AWS_VPC_ID`}}",
         "aws_instance_type":    "{{env `AWS_INSTANCE_TYPE`}}",
-        "aws_source_ami_name":  "{{env `AWS_SOURCE_AMI_NAME`}}",
-        "aws_source_ami_owner": "{{env `AWS_SOURCE_AMI_OWNER`}}"
+        "aws_source_ami_filter_name":  "{{env `AWS_SOURCE_AMI_FILTER_NAME`}}",
+        "aws_source_ami_filter_owner": "{{env `AWS_SOURCE_AMI_FILTER_OWNER`}}",
+        "aws_ami_ssh_user":     "{{env `AWS_AMI_SSH_USER`}}"
     },
     "builders": [
         {
@@ -21,13 +22,13 @@
             "source_ami_filter": {
               "filters": {
               "virtualization-type": "hvm",
-              "name":                "{{user `aws_source_ami_name`}}",
+              "name":                "{{user `aws_source_ami_filter_name`}}",
               "root-device-type":    "ebs"
               },
-              "owners": ["{{user `aws_source_ami_owner`}}"],
+              "owners": ["{{user `aws_source_ami_filter_owner`}}"],
               "most_recent": true
             },
-            "ssh_username": "ec2-user",
+            "ssh_username": "{{user `aws_ami_ssh_user`}}",
             "type":         "amazon-ebs",
             "ami_regions": [
               "us-east-1",
