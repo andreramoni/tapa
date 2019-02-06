@@ -1,5 +1,6 @@
 resource "aws_instance" "i01" {
-  ami                    = "ami-035be7bafff33b6b6"
+  # Amazon linux in us-east-1: ami-035be7bafff33b6b6
+  ami                    = "ami-035be7bafff33b6b6" 
   count                  = "1"  
   instance_type          = "t2.micro"
   vpc_security_group_ids = [ "${aws_security_group.sg01.id}" ]
