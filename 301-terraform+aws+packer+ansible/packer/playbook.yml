@@ -1,0 +1,19 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: install nginx
+      shell: "amazon-linux-extras install nginx1.12"
+
+    - name: NGInx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: SSHd UseDNS no
+      lineinfile: 
+        path: /etc/ssh/sshd_config
+        regexp: '^UseDNS'
+        line: 'UseDNS no'
+
