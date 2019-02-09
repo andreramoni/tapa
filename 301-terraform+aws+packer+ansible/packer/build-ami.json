@@ -4,8 +4,8 @@
         "aws_secret_key":       "{{env `AWS_SECRET_ACCESS_KEY`}}",
         "aws_region":           "us-east-1",
         "aws_instance_type":    "t2.micro",
-        "aws_source_ami":       "ami-035be7bafff33b6b6",
-        "aws_ami_ssh_user":     "ec2-user"
+        "aws_source_ami":       "ami-4bf3d731",
+        "aws_ami_ssh_user":     "centos"
     },
     "builders": [
         {

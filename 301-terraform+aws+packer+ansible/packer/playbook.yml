@@ -2,8 +2,22 @@
 - hosts: all
   become: yes
   tasks:
-    - name: install nginx
-      shell: "amazon-linux-extras install nginx1.12"
+
+
+    - name: Install EPEL repo.
+      yum:
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+        state: present
+
+    - name: Import EPEL GPG key.
+      rpm_key:
+        key: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
+        state: present
+
+    - name: Install NGInx
+      package:
+        name: nginx
+        state: installed
 
     - name: NGInx service
       service:
