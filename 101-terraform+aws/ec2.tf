@@ -1,8 +1,9 @@
 resource "aws_instance" "i01" {
   # Amazon linux in us-east-1: ami-035be7bafff33b6b6
   # CentOS 7 in us-east-1: ami-4bf3d731
-  ami                    = "ami-4bf3d731" 
+  ami                    = "ami-035be7bafff33b6b6" 
   count                  = "1"  
+  key_name               = "${aws_key_pair.kp01.id}"
   instance_type          = "t2.micro"
   vpc_security_group_ids = [ "${aws_security_group.sg01.id}" ]
   subnet_id              = "${aws_subnet.subnet01.id}"
