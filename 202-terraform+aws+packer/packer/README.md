@@ -12,7 +12,7 @@ Bring up the basic infrastructure:
 terraform apply
 
 Run packer:
-packer build build-centos.json
+packer build build-ami.json
 
 Destroy the build environment:
 terraform destroy

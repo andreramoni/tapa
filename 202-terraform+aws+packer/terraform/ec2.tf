@@ -1,5 +1,5 @@
 resource "aws_instance" "i01" {
-  ami                    = "${data.aws_ami.MyAMI.id}" 
+  ami                    = "${data.aws_ami.app01_ami.id}" 
   count                  = "1"  
   key_name               = "${aws_key_pair.kp01.id}"
   instance_type          = "${var.instance_type}"
