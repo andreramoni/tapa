@@ -23,7 +23,7 @@ output "subnet01_id" { value = "${aws_subnet.subnet01.id}" }
 resource "aws_subnet" "subnet02" {
   vpc_id                  = "${aws_vpc.vpc01.id}"
   cidr_block              = "10.0.2.0/24"
-  availability_zone       = "us-east-1c"
+  availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
   tags {
     Name = "subnet02"
@@ -54,6 +54,10 @@ resource "aws_route_table" "rt01" {
 
 resource "aws_route_table_association" "rta01" {
   subnet_id      = "${aws_subnet.subnet01.id}"
+  route_table_id = "${aws_route_table.rt01.id}"
+}
+resource "aws_route_table_association" "rta02" {
+  subnet_id      = "${aws_subnet.subnet02.id}"
   route_table_id = "${aws_route_table.rt01.id}"
 }
 

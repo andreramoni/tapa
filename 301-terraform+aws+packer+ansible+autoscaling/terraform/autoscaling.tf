@@ -1,9 +1,8 @@
 ### Launch configuration:
 resource "aws_launch_configuration" "app01_lc" {
   name = "app01_lc"
-
   image_id = "${data.aws_ami.app01_ami.id}"
-
+  key_name = "${aws_key_pair.kp01.id}"
   instance_type = "${var.instance_type}"
   security_groups = [
     "${aws_security_group.sg01.id}",
@@ -89,7 +88,7 @@ resource "aws_elb" "app01_elb" {
 
 }
 output "elb_name" { value = "${aws_elb.app01_elb.dns_name}" }
-output "elb_instances" { value = "${aws_elb.app01_elb.instances}" }
+#output "elb_instances" { value = "${aws_elb.app01_elb.instances}" }
 
 ##############
 # ELB ROUTE 53
