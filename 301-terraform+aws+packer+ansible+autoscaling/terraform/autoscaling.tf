@@ -34,7 +34,7 @@ resource "aws_autoscaling_group" "app01_asg" {
   ]
 
   min_elb_capacity = "1"
-  max_size         = "10"
+  max_size         = "6"
   min_size         = "2"
   desired_capacity = "2"
 
