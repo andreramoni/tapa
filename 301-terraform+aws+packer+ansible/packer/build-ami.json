@@ -11,12 +11,22 @@
         {
             "type":          "amazon-ebs",
             "access_key":    "{{user `aws_access_key`}}",
-            "ami_name":      "MyAMI-{{timestamp}}",
+            "ami_name":      "app01_ami-{{timestamp}}",
             "instance_type": "{{user `aws_instance_type`}}",
             "region":        "{{user `aws_region`}}",
             "secret_key":    "{{user `aws_secret_key`}}",
             "source_ami":    "{{user `aws_source_ami`}}",
-            "ssh_username":  "{{user `aws_ami_ssh_user`}}"
+            "ssh_username":  "{{user `aws_ami_ssh_user`}}",
+            "vpc_filter": {
+              "filters": {
+                "tag:name": "buildvpc01"
+              }
+            },
+            "subnet_filter": {
+              "filters": {
+                "tag:name": "buildsubnet01"
+              }
+            }
         }
     ],
     "provisioners": [
@@ -38,4 +48,3 @@
         }
     ]
 }
-
