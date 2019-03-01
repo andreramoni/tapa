@@ -1,3 +1,0 @@
-Add snapshot management polity with terraform for packer generated snapshots:
-https://www.terraform.io/docs/providers/aws/r/dlm_lifecycle_policy.html
-

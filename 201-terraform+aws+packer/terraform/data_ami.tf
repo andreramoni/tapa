@@ -1,3 +1,8 @@
+# This will make terraform call aws api to get
+# this value in the plan step.
+# Plan will fail if it cant find a matching ami
+# data <aws resource> <choosen name>
+
 data "aws_ami" "MyAMI" {
   most_recent = true
 
@@ -7,11 +12,12 @@ data "aws_ami" "MyAMI" {
     values = ["MyAMI*"]
   }
 
+  # You can add some more filters...
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
   }
 
-  owners = ["self"] # Canonical
+  owners = ["self"] # Or the aws account number
 }
 
