@@ -1,6 +1,6 @@
 ### Launch configuration:
 resource "aws_launch_configuration" "app01_lc" {
-  name = "app01_lc"
+  name = "app01_lc-${data.aws_ami.app01_ami.id}"
   image_id = "${data.aws_ami.app01_ami.id}"
   key_name = "${aws_key_pair.kp01.id}"
   instance_type = "${var.instance_type}"
@@ -33,8 +33,8 @@ resource "aws_autoscaling_group" "app01_asg" {
     "${aws_elb.app01_elb.id}"
   ]
 
-  min_elb_capacity = "1"
-  max_size         = "6"
+  min_elb_capacity = "2"
+  max_size         = "10"
   min_size         = "2"
   desired_capacity = "2"
 
