@@ -1,0 +1,47 @@
+------------------------------------
+Apps should talk to each other by dns name, that points to an elb.
+VPC peering is needed.
+------------------------------------
+Infra VPC.
+
+Infra team has it's own VPC with following configuration:
+- VPC: 192.168.0.0/16
+  - NET1: 192.168.1.0/24
+  - NET2: 192.168.2.0/24
+
+Services:
+- Jenkins
+- RPM http repository 
+- Katello
+- Zabbix
+- Grafana and influxdb
+  - Instances per zone
+  - Requests ok/fail per zone
+- Graylog
+
+
+ 
+------------------------------------
+Team01.
+- Services VPC: 10.1.0
+  - NET1:
+  - NET2:
+- Services:
+  - Jenkins
+  - Grafana
+    - Instances vs load graph per app (measure autoscaling)
+- DNS subzone:
+
+App01:
+- VPC:
+  - NET1:
+  - NET2:
+- Endpoint/dns:
+
+App02:
+- VPC:
+  - NET1:
+  - NET2:
+- Endpoint/dns:
+
+
