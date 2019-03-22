@@ -3,6 +3,15 @@
   become: yes
   vars:
     jenkins_hostname: localhost
+    jenkins_plugins:
+      - "workflow-aggregator"
+      - "git" 
+      - "pipeline-multibranch-defaults"
+      - "ansible"
+      - "terraform"
+      - "blueocean"
+      - "build-pipeline-plugin"
+      - "packer"
   tasks:
     - name: Install EPEL repo.
       yum:
@@ -19,7 +28,4 @@
         line: 'UseDNS no'
   roles:
     - role: geerlingguy.java
-      become: yes
     - role: geerlingguy.jenkins
-      become: yes
-
