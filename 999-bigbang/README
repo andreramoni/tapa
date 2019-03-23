@@ -1,0 +1,21 @@
+- Get Jenkins up
+  - Terraform: create build environment
+  - Packer: 
+    - Find CentOS AMI
+    - Shell script: update the system
+    - Ansible: Install Jenkins and plugins (ansible role from galaxy)
+    - Ansible: do basic Jenkins configuration
+    - Ansible: Apply baselines (ansible role)
+    - Generate the new AMI and copy them to other regions
+  - Terraform: 
+    - create a "service vpc"
+    - Get Jenkins running
+    - create dns: jenkins.srv.andreramoni.com.br
+    - Configure Jenkins (api, shell, ansible...)
+      - Create a job to generate new infra base AMI from CentOS using packer
+      - Create a job for App01 artifact generation and upload to repo
+      - Create a job to generate the AMI with packer
+      - Create a job to apply terraform
+- Run Jenkins jobs
+
+
