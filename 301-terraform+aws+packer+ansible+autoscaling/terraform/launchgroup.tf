@@ -48,6 +48,16 @@ resource "aws_autoscaling_group" "app01_asg" {
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = [
+    {
+      key                 = "Name"
+      value               = "app01"
+      propagate_at_launch = true
+    },
+  ]
+
+
 }
 output "autoscaling_group" { value = "${aws_autoscaling_group.app01_asg.id}" }
 

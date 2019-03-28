@@ -20,4 +20,3 @@ data "aws_ami" "app01_ami" {
 
   owners = ["self"] # Or the aws account number
 }
-
